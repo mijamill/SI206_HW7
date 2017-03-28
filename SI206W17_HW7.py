@@ -138,14 +138,21 @@ conn.commit()
 
 
 # Select from the database all of the TIMES the tweets you collected were posted and fetch all the tuples that contain them in to the variable tweet_posted_times.
-
+statement = 'Select time_posted from Tweets'
+cur.execute(statement)
+tweet_posted_times = cur.fetchall()
 
 # Select all of the tweets (the full rows/tuples of information) that have been retweeted MORE than 2 times, and fetch them into the variable more_than_2_rts.
-
+statement = 'Select * from Tweets Where retweets > 2'
+cur.execute(statement)
+more_than_2_rts = cur.fetchall()
 
 
 # Select all of the TEXT values of the tweets that are retweets of another account (i.e. have "RT" at the beginning of the tweet text). Save the FIRST ONE from that group of text values in the variable first_rt. Note that first_rt should contain a single string value, not a tuple.
-
+statement = 'Select tweet_text from Tweets Where tweet_text like \'RT%\''
+cur.execute(statement)
+first_rt = cur.fetchone()
+first_rt = ' '.join(first_rt)
 
 
 # Finally, done with database stuff for a bit: write a line of code to close the cursor to the database.
@@ -155,7 +162,10 @@ conn.commit()
 ## [PART 3] - Processing data
 
 # Define a function get_twitter_users that accepts a string as in put and returns a SET of the _twitter screennames_ of each twitter user who was mentioned in that string. 
-
+def get_twitter_users(tweet_string):
+	tweet_string = tweet_string.rstrip()
+	regex = r"@([A-z0-9_]+)"
+	return set(re.findall(regex, tweet_string))
 # Note that the syntax for mentions in a tweet is that the username is preceded by an "@" character, e.g. "@umsi" or "@aadl", and cannot contain any punctuation besides underscores -- that's how to determine what user names are mentioned. (e.g. @hello? is just the username "hello", but @programmer_at_umsi is "programmer_at_umsi"). 
 
 #re.match and getting the 0th group from the MatchObject may be useful for you here... reminder: http://stackoverflow.com/questions/15340582/python-extract-pattern-matches
